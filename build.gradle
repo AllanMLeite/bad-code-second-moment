@@ -1,9 +1,11 @@
 plugins {
 	id 'org.springframework.boot' version '2.1.4.RELEASE'
 	id 'java'
+	id "org.sonarqube" version "2.7"
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: "jacoco"
 
 group = 'br.com.cc'
 version = '0.0.1-SNAPSHOT'
@@ -11,6 +13,26 @@ sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+jacoco {
+    toolVersion = "0.8.1"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/*DemoApplication**' ])
+        })
+    }
 }
 
 dependencies {
